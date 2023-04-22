@@ -1,0 +1,3 @@
+### path to dicom sheet
+dicoms: config/dicoms.tsv
+BIDSdatasetpath: /mnt/raid/MS/data/bids/

@@ -1,0 +1,4 @@
+fullpath	sub	ses	target	scan
+/mnt/raid/MS/data/bids/sub-SW1-2322/ses-20220531/dwi/ep2d_diff_2mm_hcp_73_b3000_AP_29	sub-SW1-2322	ses-20220531	dwi	ep2d_diff_2mm_hcp_73_b3000_AP_29
+/mnt/raid/MS/data/bids/sub-SW1-2322/ses-20220531/dwi/ep2d_diff_2mm_hcp_b0_G3_PA_25	sub-SW1-2322	ses-20220531	fmap	ep2d_diff_2mm_hcp_b0_G3_PA_25
+/mnt/raid/MS/data/bids/sub-SW1-2322/ses-20220531/dwi/ep2d_diff_2mm_hcp_32_b1000_AP_26	sub-SW1-2322	ses-20220531	dwi	ep2d_diff_2mm_hcp_32_b1000_AP_26

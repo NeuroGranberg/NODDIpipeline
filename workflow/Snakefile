@@ -6,7 +6,7 @@
 ##### load rules #####
 
 
-include: "rules/mriconvert.smk"
+include: "rules/NODDIpipeline.smk"
 
 
 ##### target rules #####

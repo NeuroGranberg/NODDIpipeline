@@ -1,6 +1,8 @@
 import glob
+import os
 import pandas as pd
 from pathlib import Path
+import snakemake.io as snake
 
 # temporary dictionarys for running isolated debugging
 config = {'dicoms': 'config/dicomstest.tsv', 
@@ -32,40 +34,56 @@ def get_dicomtarget(wildcards):
 
 #workaround for single wildcard object, also no multiple matches required in dicompath.tsv
 #write decorator or return a function with single wildcard, ie currying
-def get_acq_from_sub_ses_b1000(wildcards):
+def get_acq_from_sub_ses(wildcards,acqmask,suffixstr,bidsdir):
     pattern=dicompath.loc[(dicompath["sub"] == wildcards.sub) & (dicompath["ses"] == wildcards.ses), "acq"]
-    mask=pd.Series(pattern,dtype='string').str.contains(r"b1000")
-    return f"{config['BIDSdatasetpath']}/{wildcards.sub}/{wildcards.ses}/dwi/{wildcards.sub}_{wildcards.ses}_acq-{pattern[mask].values[0]}_dwi.nii.gz"
+    mask=pd.Series(pattern,dtype='string').str.contains(acqmask)
+    return f"{config['BIDSdatasetpath']}/{wildcards.sub}/{wildcards.ses}/{bidsdir}/{wildcards.sub}_{wildcards.ses}_acq-{pattern[mask].values[0]}_{suffixstr}"
+
+def get_acq_from_sub_ses_b1000(wildcards):
+     return get_acq_from_sub_ses(wildcards,acqmask="b1000",suffixstr="dwi.nii.gz",bidsdir="dwi")
+    #pattern=dicompath.loc[(dicompath["sub"] == wildcards.sub) & (dicompath["ses"] == wildcards.ses), "acq"]
+    #mask=pd.Series(pattern,dtype='string').str.contains(r"b1000")
+    #return f"{config['BIDSdatasetpath']}/{wildcards.sub}/{wildcards.ses}/dwi/{wildcards.sub}_{wildcards.ses}_acq-{pattern[mask].values[0]}_dwi.nii.gz"
 
 def get_acq_from_sub_ses_b1000_bvec(wildcards):
-    pattern=dicompath.loc[(dicompath["sub"] == wildcards.sub) & (dicompath["ses"] == wildcards.ses), "acq"]
-    mask=pd.Series(pattern,dtype='string').str.contains(r"b1000")
-    return f"{config['BIDSdatasetpath']}/{wildcards.sub}/{wildcards.ses}/dwi/{wildcards.sub}_{wildcards.ses}_acq-{pattern[mask].values[0]}_dwi.voxel_space.bvecs"
+    return get_acq_from_sub_ses(wildcards,acqmask="b1000",suffixstr="dwi.voxel_space.bvecs",bidsdir="dwi")
+    #pattern=dicompath.loc[(dicompath["sub"] == wildcards.sub) & (dicompath["ses"] == wildcards.ses), "acq"]
+    #mask=pd.Series(pattern,dtype='string').str.contains(r"b1000")
+    #return f"{config['BIDSdatasetpath']}/{wildcards.sub}/{wildcards.ses}/dwi/{wildcards.sub}_{wildcards.ses}_acq-{pattern[mask].values[0]}_dwi.voxel_space.bvecs"
 
 def get_acq_from_sub_ses_b1000_bvals(wildcards):
-    pattern=dicompath.loc[(dicompath["sub"] == wildcards.sub) & (dicompath["ses"] == wildcards.ses), "acq"]
-    mask=pd.Series(pattern,dtype='string').str.contains(r"b1000")
-    return f"{config['BIDSdatasetpath']}/{wildcards.sub}/{wildcards.ses}/dwi/{wildcards.sub}_{wildcards.ses}_acq-{pattern[mask].values[0]}_dwi.bvals"
+    return get_acq_from_sub_ses(wildcards,acqmask="b1000",suffixstr="dwi.bvals",bidsdir="dwi")
+    #pattern=dicompath.loc[(dicompath["sub"] == wildcards.sub) & (dicompath["ses"] == wildcards.ses), "acq"]
+    #mask=pd.Series(pattern,dtype='string').str.contains(r"b1000")
+    #return f"{config['BIDSdatasetpath']}/{wildcards.sub}/{wildcards.ses}/dwi/{wildcards.sub}_{wildcards.ses}_acq-{pattern[mask].values[0]}_dwi.bvals"
 
 def get_acq_from_sub_ses_b3000(wildcards):
-    pattern=dicompath.loc[(dicompath["sub"] == wildcards.sub) & (dicompath["ses"] == wildcards.ses), "acq"]
-    mask=pd.Series(pattern,dtype='string').str.contains(r"b3000")
-    return f"{config['BIDSdatasetpath']}/{wildcards.sub}/{wildcards.ses}/dwi/{wildcards.sub}_{wildcards.ses}_acq-{pattern[mask].values[0]}_dwi.nii.gz"
+    return get_acq_from_sub_ses(wildcards,acqmask="b3000",suffixstr="dwi.nii.gz",bidsdir="dwi")
+    #pattern=dicompath.loc[(dicompath["sub"] == wildcards.sub) & (dicompath["ses"] == wildcards.ses), "acq"]
+    #mask=pd.Series(pattern,dtype='string').str.contains(r"b3000")
+    #return f"{config['BIDSdatasetpath']}/{wildcards.sub}/{wildcards.ses}/dwi/{wildcards.sub}_{wildcards.ses}_acq-{pattern[mask].values[0]}_dwi.nii.gz"
 
 def get_acq_from_sub_ses_b3000_bvec(wildcards):
-    pattern=dicompath.loc[(dicompath["sub"] == wildcards.sub) & (dicompath["ses"] == wildcards.ses), "acq"]
-    mask=pd.Series(pattern,dtype='string').str.contains(r"b3000")
-    return f"{config['BIDSdatasetpath']}/{wildcards.sub}/{wildcards.ses}/dwi/{wildcards.sub}_{wildcards.ses}_acq-{pattern[mask].values[0]}_dwi.voxel_space.bvecs"
+    return get_acq_from_sub_ses(wildcards,acqmask="b3000",suffixstr="dwi.voxel_space.bvecs",bidsdir="dwi")
+    #pattern=dicompath.loc[(dicompath["sub"] == wildcards.sub) & (dicompath["ses"] == wildcards.ses), "acq"]
+    #mask=pd.Series(pattern,dtype='string').str.contains(r"b3000")
+    #return f"{config['BIDSdatasetpath']}/{wildcards.sub}/{wildcards.ses}/dwi/{wildcards.sub}_{wildcards.ses}_acq-{pattern[mask].values[0]}_dwi.voxel_space.bvecs"
 
 def get_acq_from_sub_ses_b3000_bvals(wildcards):
-    pattern=dicompath.loc[(dicompath["sub"] == wildcards.sub) & (dicompath["ses"] == wildcards.ses), "acq"]
-    mask=pd.Series(pattern,dtype='string').str.contains(r"b3000")
-    return f"{config['BIDSdatasetpath']}/{wildcards.sub}/{wildcards.ses}/dwi/{wildcards.sub}_{wildcards.ses}_acq-{pattern[mask].values[0]}_dwi.bvals"
+    return get_acq_from_sub_ses(wildcards,acqmask="b3000",suffixstr="dwi.bvals",bidsdir="dwi")
+    #pattern=dicompath.loc[(dicompath["sub"] == wildcards.sub) & (dicompath["ses"] == wildcards.ses), "acq"]
+    #mask=pd.Series(pattern,dtype='string').str.contains(r"b3000")
+    #return f"{config['BIDSdatasetpath']}/{wildcards.sub}/{wildcards.ses}/dwi/{wildcards.sub}_{wildcards.ses}_acq-{pattern[mask].values[0]}_dwi.bvals"
 
 def get_acq_from_sub_ses_PA(wildcards):
-    pattern=dicompath.loc[(dicompath["sub"] == wildcards.sub) & (dicompath["ses"] == wildcards.ses), "acq"]
-    mask=pd.Series(pattern,dtype='string').str.contains(r"PA")
-    return f"{config['BIDSdatasetpath']}/{wildcards.sub}/{wildcards.ses}/fmap/{wildcards.sub}_{wildcards.ses}_acq-{pattern[mask].values[0]}_PA_epi.nii.gz"
+    return get_acq_from_sub_ses(wildcards,acqmask="PA",suffixstr="PA_epi.nii.gz",bidsdir="fmap")
+    #pattern=dicompath.loc[(dicompath["sub"] == wildcards.sub) & (dicompath["ses"] == wildcards.ses), "acq"]
+    #mask=pd.Series(pattern,dtype='string').str.contains(r"PA")
+    #return f"{config['BIDSdatasetpath']}/{wildcards.sub}/{wildcards.ses}/fmap/{wildcards.sub}_{wildcards.ses}_acq-{pattern[mask].values[0]}_PA_epi.nii.gz"
+
+
+testw = snake.Wildcards()
+print(testw)
 
 #build targets
 def get_converted_nii(): 
@@ -83,7 +101,7 @@ def get_NODDI_protocols():
     return output_patterns
 
 def get_preprocessing():
-    opattern = f"{config['BIDSdatasetpath']}/derivatives/NODDI_MDT/{{sub}}/{{ses}}/preproc/eddy_corrected_data.nii.gz"
+    opattern = f"{config['BIDSdatasetpath']}/derivatives/NODDI_MDT/{{sub}}/{{ses}}/preproc/bvals"
     output_patterns =[
     opattern.format(**dict(i for i in row.items())) 
     for _, row in dicompath.iterrows()]
@@ -92,20 +110,23 @@ def get_preprocessing():
 
 rule all:
     input:
-        get_preprocessing()
+        get_NODDI_protocols()
 
 #bvec and bvals are side effects
-rule nii_conversion:
-    input:
-         lambda wc: f"{config['BIDSdatasetpath']}/{{sub}}/{{ses}}/dwi/" + lookupdir[wc.acq]
-    output:
-         f"{config['BIDSdatasetpath']}/{{sub}}/{{ses}}/{{target}}/{{sub}}_{{ses}}_acq-{{acq}}_{{suffix}}"
-    wildcard_constraints:
-        acq="[^_]+"
-    params:
-        dicomtarget=get_dicomtarget
-    shell:
-        "cd {input} && mri_convert -ot nii {params.dicomtarget} {output}"
+# rule nii_conversion:
+#     input:
+#          lambda wc: f"{config['BIDSdatasetpath']}/{{sub}}/{{ses}}/dwi/" + lookupdir[wc.acq]
+#     output:
+#          f"{config['BIDSdatasetpath']}/{{sub}}/{{ses}}/{{target}}/{{sub}}_{{ses}}_acq-{{acq}}_{{suffix}}"
+#     wildcard_constraints:
+#         acq="[^_]+"
+#     params:
+#         dicomtarget=get_dicomtarget
+#     shell:
+#         "cd {input} && mri_convert -ot nii {params.dicomtarget} {output}"
+
+
+#dcm2niix -z y -f {output} {input}
 
 #checkpoint needed to revaluate DAG to capture bvec, bvals, ie run rule all sequentially calling 
 #get_converted_nii() followed by get_NODDI_protocols()
@@ -135,14 +156,14 @@ rule topup:
         acqparams= "config/acqparams.txt"
     output:
         image= f"{config['BIDSdatasetpath']}/derivatives/NODDI_MDT/{{sub}}/{{ses}}/preproc/my_unwarped_images.nii.gz",
-        topupim= f"{config['BIDSdatasetpath']}/derivatives/NODDI_MDT/{{sub}}/{{ses}}/preproc/my_topup_results_fieldcoeff.nii.gz",
+        topupim= f"{config['BIDSdatasetpath']}/derivatives/NODDI_MDT/{{sub}}/{{ses}}/preproc/my_topup_results_fieldcoef.nii.gz",
         topuptxt= f"{config['BIDSdatasetpath']}/derivatives/NODDI_MDT/{{sub}}/{{ses}}/preproc/my_topup_results_movpar.txt"
     shadow:"shallow"
     shell:
         r"""
         topup --imain={input.b0appa} --datain={input.acqparams} --config=b02b0.cnf --out=my_topup_results --iout=my_unwarped_images
         mv my_unwarped_images.nii.gz {output.image}
-        mv my_topup_results_fieldcoeff.nii.gz {output.topupim}
+        mv my_topup_results_fieldcoef.nii.gz {output.topupim}
         mv my_topup_results_movpar.txt {output.topuptxt}
         """
 
@@ -185,8 +206,19 @@ rule merge_shells:
         indx=""
         lines=`wc -l < {output.bvals}`
         for ((i=1;i<=$lines;i+=1)); do indx="$indx 1";done
-        echo $indx > {output.index}
-        """
+        echo $indx > {output.index}      
+        """  
+        #fix wildcard string substitution
+    # run:
+    #     shell("fslmerge -t {output.dwi} {input.b1000} {input.b3000}")
+    #     shell("cat {input.b1000bvecs} {input.b3000bvecs} > {output.bvecs}")
+    #     shell("cat {input.b1000bvals} {input.b3000bvals} > {output.bvals}")
+    #     with open({output.bvals}, 'r') as f:
+    #         lines = sum(1 for line in f)
+    #     indx = " ".join("1" for i in range(lines))
+    #     with open({output.index}, 'w') as f:
+    #         f.write(indx)
+
 #side effects
 rule eddy:
     input:
@@ -196,7 +228,7 @@ rule eddy:
         index= f"{config['BIDSdatasetpath']}/derivatives/NODDI_MDT/{{sub}}/{{ses}}/preproc/index.txt",
         bvecs= f"{config['BIDSdatasetpath']}/derivatives/NODDI_MDT/{{sub}}/{{ses}}/preproc/DWI.bvecs",
         bvals= f"{config['BIDSdatasetpath']}/derivatives/NODDI_MDT/{{sub}}/{{ses}}/preproc/DWI.bvals",
-        topupim= f"{config['BIDSdatasetpath']}/derivatives/NODDI_MDT/{{sub}}/{{ses}}/preproc/my_topup_results_fieldcoeff.nii.gz",
+        topupim= f"{config['BIDSdatasetpath']}/derivatives/NODDI_MDT/{{sub}}/{{ses}}/preproc/my_topup_results_fieldcoef.nii.gz",
         topuptxt= f"{config['BIDSdatasetpath']}/derivatives/NODDI_MDT/{{sub}}/{{ses}}/preproc/my_topup_results_movpar.txt",
     output: 
         image= f"{config['BIDSdatasetpath']}/derivatives/NODDI_MDT/{{sub}}/{{ses}}/preproc/eddy_corrected_data.nii.gz",
@@ -204,59 +236,61 @@ rule eddy:
     shadow:"shallow"
     shell:
         r"""
-        eddy_cuda10.2 --imain={input.imain} --mask={input.mask} --acqp={input.acqp} --index={input.index} --bvecs={input.bvecs} --bvals={input.bvals} --topup=my_topup_results --out=eddy_corrected_data
-        mv eddy_corrected_data.nii.gz {output.image}
-        mv eddy_corrected_data.eddy_rotated_bvecs {output.bvecs}
+        cp config/acqparams.txt {config[BIDSdatasetpath]}/derivatives/NODDI_MDT/{wildcards.sub}/{wildcards.ses}/preproc/acqparams.txt
+        cd {config[BIDSdatasetpath]}/derivatives/NODDI_MDT/{wildcards.sub}/{wildcards.ses}/preproc/
+        eddy_cuda10.2 --imain={input.imain} --mask={input.mask} --acqp=acqparams.txt --index={input.index} --bvecs={input.bvecs} --bvals={input.bvals} --topup=my_topup_results --out=eddy_corrected_data1
+        mv eddy_corrected_data1.nii.gz {output.image}
+        mv eddy_corrected_data1.eddy_rotated_bvecs {output.bvecs}
         """
 
-# AWK_CMD =r"""{printf "%i ",$0}"""
-# rule bvals_for_mdt:
-#     input:
-#         bvals= f"{config['BIDSdatasetpath']}/derivatives/NODDI_MDT/{{sub}}/{{ses}}/preproc/DWI.bvals",
-#         script= "scripts/transpose.sh" 
-#     output:
-#         bvals= f"{config['BIDSdatasetpath']}/derivatives/NODDI_MDT/{{sub}}/{{ses}}/preproc/bvals"     
-#     shadow:"shallow"
-#     shell:
-#         r"""
-#         awk {AWK_CMD:q} {input.bvals}> bvals1
-#         {input.script} bvals1 > bvals2
-#         {input.script} bvals2 > {output.bvals}
-#         rm bvals1 bvals2
-#         """
+AWK_CMD =r"""{printf "%i ",$0}"""
+rule bvals_for_mdt:
+     input:
+         bvals= f"{config['BIDSdatasetpath']}/derivatives/NODDI_MDT/{{sub}}/{{ses}}/preproc/DWI.bvals",
+         script= "workflow/scripts/transpose.sh" 
+     output:
+         bvals= f"{config['BIDSdatasetpath']}/derivatives/NODDI_MDT/{{sub}}/{{ses}}/preproc/bvals"     
+     shadow:"shallow"
+     shell:
+         r"""
+         awk {AWK_CMD:q} {input.bvals}> bvals1
+         {input.script} bvals1 > bvals2
+         {input.script} bvals2 > {output.bvals}
+         rm bvals1 bvals2
+         """
 # #move run section to script to avoid import mdt
-# rule mdt_fit:
-#     input:
-#         bvecs= f"{config['BIDSdatasetpath']}/derivatives/NODDI_MDT/{{sub}}/{{ses}}/preproc/eddy_rotated_bvecs",
-#         bvals= f"{config['BIDSdatasetpath']}/derivatives/NODDI_MDT/{{sub}}/{{ses}}/preproc/bvals",
-#         dwi= f"{config['BIDSdatasetpath']}/derivatives/NODDI_MDT/{{sub}}/{{ses}}/preproc/eddy_corrected_data.nii.gz",
-#         mask= f"{config['BIDSdatasetpath']}/derivatives/NODDI_MDT/{{sub}}/{{ses}}/preproc/brain_mask.nii.gz"
-#     output:
-#         protocol= f"{config['BIDSdatasetpath']}/derivatives/NODDI_MDT/{{sub}}/{{ses}}/protocol.prtcl",
-#         outputdir= directory(f"{config['BIDSdatasetpath']}/derivatives/NODDI_MDT/{{sub}}/{{ses}}/NODDI")
-#     log: 'run.log'
-#     run:
-#         import mdt
-#         protocol = mdt.create_protocol(
-#         bvecs= {input.bvecs}, 
-#         bvals= {input.bvals},
-#         out_file= {output.protocol})
+rule mdt_fit:
+     input:
+         bvecs= f"{config['BIDSdatasetpath']}/derivatives/NODDI_MDT/{{sub}}/{{ses}}/preproc/eddy_rotated_bvecs",
+         bvals= f"{config['BIDSdatasetpath']}/derivatives/NODDI_MDT/{{sub}}/{{ses}}/preproc/bvals",
+         dwi= f"{config['BIDSdatasetpath']}/derivatives/NODDI_MDT/{{sub}}/{{ses}}/preproc/eddy_corrected_data.nii.gz",
+         mask= f"{config['BIDSdatasetpath']}/derivatives/NODDI_MDT/{{sub}}/{{ses}}/preproc/brain_mask.nii.gz"
+     output:
+         protocol= f"{config['BIDSdatasetpath']}/derivatives/NODDI_MDT/{{sub}}/{{ses}}/protocol.prtcl",
+         outputdir= directory(f"{config['BIDSdatasetpath']}/derivatives/NODDI_MDT/{{sub}}/{{ses}}/NODDI")
 
-#         input_data = mdt.load_input_data(
-#             {input.dwi},
-#             {output.protocol},
-#             {input.mask},
-#             noise_std=None,
-#             gradient_deviations=None,
-#             extra_protocol={})
+     run:
+         import mdt
+         protocol = mdt.create_protocol(
+         bvecs= {input.bvecs}, 
+         bvals= {input.bvals},
+         out_file= {output.protocol})
 
-#         mdt.fit_model(
-#             'NODDI',
-#             input_data,
-#             {output.outputdir},
-#             recalculate=True,
-#             double_precision=False,
-#             cl_device_ind=[0],
-#             use_cascaded_inits=True,
-#             method='Powell',
-#             optimizer_options={'patience': 2})
+         input_data = mdt.load_input_data(
+             {input.dwi},
+             {output.protocol},
+             {input.mask},
+             noise_std=None,
+             gradient_deviations=None,
+             extra_protocol={})
+
+         mdt.fit_model(
+             'NODDI',
+             input_data,
+             {output.outputdir},
+             recalculate=True,
+             double_precision=False,
+             cl_device_ind=[0],
+             use_cascaded_inits=True,
+             method='Powell',
+             optimizer_options={'patience': 2})
